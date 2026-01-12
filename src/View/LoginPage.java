@@ -265,7 +265,7 @@ public class LoginPage extends javax.swing.JFrame {
     // ADMIN LOGIN
     if (rbAdmin.isSelected()) {
         if (username.equals("admin") && password.equals("admin")) {
-            new AdminDashboard().setVisible(true);
+            new AD().setVisible(true);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid Admin credentials");
