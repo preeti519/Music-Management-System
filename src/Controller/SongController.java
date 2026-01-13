@@ -4,45 +4,44 @@
  */
 package Controller;
 
+import Model.DataStore;
 import Model.Song;
 import java.util.ArrayList;
-
-/**
- *
- * @author airm2
+/*
+ * Controller connects View and Model.
+ * View never directly accesses file or data.
  */
 public class SongController {
-    // CREATE
-    public static void addSong(String title, String artist, String genre) {
-        Song s = new Song(title, artist, genre);
-        DataStore.songList.add(s);
+   
+
+
+    private final ArrayList<Song> songs;
+
+    // Load songs when controller starts
+    public SongController() {
+        songs = DataStore.loadSongs();
     }
 
-    // READ
-    public static ArrayList<Song> getAllSongs() {
-        return DataStore.songList;
+    // Add new song
+    public void addSong(Song song) {
+        songs.add(song);
+        DataStore.saveSongs(songs);
     }
 
-    // UPDATE
-    public static void updateSong(int index, String title, String artist, String genre) {
-        Song s = DataStore.songList.get(index);
-        s.setTitle(title);
-        s.setArtist(artist);
-        s.setGenre(genre);
+    // Update existing song
+    public void updateSong(int index, Song song) {
+        songs.set(index, song);
+        DataStore.saveSongs(songs);
     }
 
-    // DELETE
-    public static void deleteSong(int index) {
-        DataStore.songList.remove(index);
+    // Delete song
+    public void deleteSong(int index) {
+        songs.remove(index);
+        DataStore.saveSongs(songs);
     }
-    
-    public static void sortSongsByTitle() {
-    DataStore.songList.sort(
-        (s1, s2) -> s1.getTitle().compareToIgnoreCase(s2.getTitle())
-    );
-}
 
-
-
-    
+    // Return all songs
+    public ArrayList<Song> getAllSongs() {
+        return songs;
+    }
 }

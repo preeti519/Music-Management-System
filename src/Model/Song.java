@@ -9,49 +9,37 @@ package Model;
  * @author airm2
  */
 
-public class Song {
+import java.io.Serializable;
 
-    private String title;
-    private String artist;
-    private String genre;
+/*
+ * This class represents a Song.
+ * It only stores data (no UI, no logic).
+ */
+public class Song implements Serializable {
 
-    public Song(String title, String artist, String genre) {
+    private final String title;
+    private final String artist;
+    private final String album;
+    private final String genre;
+    private final int duration;
+    private final int releaseYear;
+
+    // Constructor
+    public Song(String title, String artist, String album,
+                String genre, int duration, int releaseYear) {
         this.title = title;
         this.artist = artist;
+        this.album = album;
         this.genre = genre;
+        this.duration = duration;
+        this.releaseYear = releaseYear;
     }
 
-    // GETTERS
-    public String getTitle() {
-        return title;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    // SETTERS (needed for UPDATE)
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
-
-    @Override
-    public String toString() {
-        return title + " - " + artist + " (" + genre + ")";
-    }
+    // Getter methods (used by controller/view)
+    public String getTitle() { return title; }
+    public String getArtist() { return artist; }
+    public String getAlbum() { return album; }
+    public String getGenre() { return genre; }
+    public int getDuration() { return duration; }
+    public int getReleaseYear() { return releaseYear; }
 }
-
-    
-
