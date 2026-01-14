@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import Controller.SongController;
 import Model.Song;
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 
 
@@ -22,75 +23,64 @@ public class AdminDashboard extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboard.class.getName());
     
-    // Table model for View Songs table
-private final javax.swing.table.DefaultTableModel model;
+    // To track which row is being edited
+    private int editingRowIndex = -1;
 
-// To track which row is being edited
-private int editingRowIndex = -1;
-
-//Controller instance(handels Curd+Storage)
-private final SongController songController;
-//List that holds all songs (loaded from file)
-private ArrayList<Song> songs;
-
+    //Controller instance(handels Curd+Storage)
+    private final SongController songController;
     
+    // Song list from model
+    private ArrayList<Song> songs;
+    // Table model for View Songs table (jTable1)
+    private final DefaultTableModel model;
+    // Table model for Search & Sort table (jTable3)
+    private DefaultTableModel searchTableModel;
     
-    
-
-    /**
-     * Creates new form AD
-     */
     public AdminDashboard() {
-        initComponents();
-        
-        
-        MainPanel.add(DashboardPanel, "dashboard");
-        MainPanel.add(ViewSongPanel, "view");
-        MainPanel.add(AddSongPanel, "add");
-        MainPanel.add(SearchSortPanel, "search");
-        MainPanel.add(UserViewPanel, "user");
-        model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
-        // Remove NetBeans dummy empty rows
-        model.setRowCount(0);
-        
+    initComponents();
 
-// Create controller and load data
-songController = new SongController();
-songs = songController.getAllSongs();
+    // Initialize controller
+    songController = new SongController();
 
-// If no data exists (first run), add default songs
-if (songs.isEmpty()) {
-    songController.addSong(new Song("Shape of You", "Ed Sheeran", "Divide", "Pop", 4, 2017));
-    songController.addSong(new Song("Believer", "Imagine Dragons", "Evolve", "Rock", 3, 2018));
-    songController.addSong(new Song("Fix You", "Coldplay", "X&Y", "Rock", 4, 2005));
-    songController.addSong(new Song("Someone Like You", "Adele", "21", "Pop", 5, 2011));
-    songController.addSong(new Song("Perfect", "Adele", "21", "Pop", 5, 2010));
+    // Load songs from model
+    songs = songController.getAllSongs();
 
-    songs = songController.getAllSongs(); // reload after insert
+    // Initialize table models
+    model = (DefaultTableModel) jTable1.getModel();
+    searchTableModel = (DefaultTableModel) jTable3.getModel();
+
+    // Clear dummy rows
+    model.setRowCount(0);
+    searchTableModel.setRowCount(0);
+
+    // Card layout panels
+    MainPanel.add(DashboardPanel, "dashboard");
+    MainPanel.add(ViewSongPanel, "view");
+    MainPanel.add(AddSongPanel, "add");
+    MainPanel.add(SearchSortPanel, "search");
+    MainPanel.add(UserViewPanel, "user");
+
+    // Insert default data (first run only)
+    if (songs.isEmpty()) {
+        songController.addSong(new Song("Shape of You", "Ed Sheeran", "Divide", "Pop", 4, 2017));
+        songController.addSong(new Song("Believer", "Imagine Dragons", "Evolve", "Rock", 3, 2018));
+        songController.addSong(new Song("Fix You", "Coldplay", "X&Y", "Rock", 4, 2005));
+        songController.addSong(new Song("Someone Like You", "Adele", "21", "Pop", 5, 2011));
+        songController.addSong(new Song("Perfect", "Adele", "21", "Pop", 5, 2010));
+
+        songs = songController.getAllSongs();
+    }
+
+    //  IMPORTANT: Load table
+    loadSongsToTable();
 }
 
-// Load songs into JTable
-loadSongsToTable();
-        
-        
-        
-        DashboardPanel.setBorder(
-        javax.swing.BorderFactory.createCompoundBorder(
-        javax.swing.BorderFactory.createTitledBorder("Admin Overview"),
-        javax.swing.BorderFactory.createEmptyBorder(10, 15, 10, 15)
-    )
-);
-        
-  
-
-
-    }
+    
     /*
- * Loads songs from the model list into JTable
- * Called on startup and after add/update/delete
+ * Load songs into View Songs table (jTable1)
  */
-private void loadSongsToTable() {
-    model.setRowCount(0); // clear table first
+   private void loadSongsToTable() {
+    model.setRowCount(0);
 
     for (Song s : songs) {
         model.addRow(new Object[]{
@@ -103,6 +93,25 @@ private void loadSongsToTable() {
         });
     }
 }
+
+/*
+ * Load search/sort results into Search & Sort table (jTable3)
+ */
+private void loadSearchTable(ArrayList<Song> list) {
+    searchTableModel.setRowCount(0);
+
+    for (Song s : list) {
+        searchTableModel.addRow(new Object[]{
+            s.getTitle(),
+            s.getArtist(),
+            s.getAlbum(),
+            s.getGenre(),
+            s.getDuration(),
+            s.getReleaseYear()
+        });
+    }
+}
+
 
 
     /**
@@ -132,7 +141,6 @@ private void loadSongsToTable() {
         jButton5 = new javax.swing.JButton();
         MainPanel = new javax.swing.JPanel();
         DashboardPanel = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
         ViewSongPanel = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jButton8 = new javax.swing.JButton();
@@ -333,25 +341,17 @@ private void loadSongsToTable() {
         MainPanel.setBackground(new java.awt.Color(255, 255, 255));
         MainPanel.setLayout(new java.awt.CardLayout());
 
-        DashboardPanel.setBackground(new java.awt.Color(240, 238, 232));
-
-        jLabel4.setText("Dashboard");
+        DashboardPanel.setBackground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout DashboardPanelLayout = new javax.swing.GroupLayout(DashboardPanel);
         DashboardPanel.setLayout(DashboardPanelLayout);
         DashboardPanelLayout.setHorizontalGroup(
             DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DashboardPanelLayout.createSequentialGroup()
-                .addGap(150, 150, 150)
-                .addComponent(jLabel4)
-                .addContainerGap(387, Short.MAX_VALUE))
+            .addGap(0, 601, Short.MAX_VALUE)
         );
         DashboardPanelLayout.setVerticalGroup(
             DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DashboardPanelLayout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addComponent(jLabel4)
-                .addContainerGap(462, Short.MAX_VALUE))
+            .addGap(0, 527, Short.MAX_VALUE)
         );
 
         MainPanel.add(DashboardPanel, "dashboard");
@@ -709,7 +709,7 @@ private void loadSongsToTable() {
         jPanel5.add(jLabel15);
 
         jComboBox2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Title", "Year" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Title", "Year", "Advanced" }));
         jComboBox2.setPreferredSize(new java.awt.Dimension(120, 28));
         jPanel5.add(jComboBox2);
 
@@ -724,6 +724,11 @@ private void loadSongsToTable() {
         jButton11.setFocusPainted(false);
         jButton11.setOpaque(true);
         jButton11.setPreferredSize(new java.awt.Dimension(90, 30));
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
         jPanel5.add(jButton11);
 
         ControllerPanel.add(jPanel5);
@@ -756,6 +761,11 @@ private void loadSongsToTable() {
         jButton10.setFocusPainted(false);
         jButton10.setOpaque(true);
         jButton10.setPreferredSize(new java.awt.Dimension(90, 30));
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
         jPanel6.add(jButton10);
 
         ControllerPanel.add(jPanel6);
@@ -1062,6 +1072,105 @@ if (confirm == JOptionPane.YES_OPTION) {
 
     }//GEN-LAST:event_jButton9ActionPerformed
 
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        // TODO add your handling code here:
+        
+
+    String keyword = jTextField1.getText().trim();
+
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter search text");
+        return;
+    }
+
+    String searchType = jComboBox2.getSelectedItem().toString();
+
+    // ----- BINARY SEARCH -----
+    if (searchType.equals("Title")) {
+
+    Song result = songController.searchByTitleBinary(keyword);
+
+    if (result != null) {
+        ArrayList<Song> singleResult = new ArrayList<>();
+        singleResult.add(result);
+        loadSearchTable(singleResult);
+    } else {
+        JOptionPane.showMessageDialog(this, "Song not found");
+    }
+
+    
+    
+
+    } 
+    else if (searchType.equals("Year")) {
+
+        try {
+            int year = Integer.parseInt(keyword);
+            Song result = songController.searchByYearBinary(year);
+
+            if (result != null) {
+                ArrayList<Song> single = new ArrayList<>();
+                single.add(result);
+                loadSearchTable(single);
+            } else {
+                JOptionPane.showMessageDialog(this, "Song not found");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid year");
+        }
+    }
+    // Linear search is used for partial text matching
+    else if (searchType.equals("Advanced")) {
+
+    ArrayList<Song> results = songController.linearSearch(keyword);
+
+    if (!results.isEmpty()) {
+        loadSearchTable(results);
+    } else {
+        JOptionPane.showMessageDialog(this, "No matching songs found");
+    }
+}
+
+
+
+        
+    
+
+
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        // TODO add your handling code here:
+        
+
+    ArrayList<Song> sortedList;
+
+    // Check which radio button is selected
+    if (jRadioButton1.isSelected()) {
+        // Ascending sort
+        sortedList = songController.sortSongsAscending();
+
+    } else if (jRadioButton2.isSelected()) {
+        // Descending sort
+        sortedList = songController.sortSongsDescending();
+
+    } else {
+        JOptionPane.showMessageDialog(
+            this,
+            "Please select Ascending or Descending order",
+            "Sort Option Required",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    // Load sorted result into Search & Sort table
+    loadSearchTable(sortedList);
+
+
+    }//GEN-LAST:event_jButton10ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1131,7 +1240,6 @@ if (confirm == JOptionPane.YES_OPTION) {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
