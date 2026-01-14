@@ -7,26 +7,77 @@ package Controller;
 import Model.DataStore;
 import Model.Song;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 /*
  * Controller connects View and Model.
  * View never directly accesses file or data.
  */
 public class SongController {
    
+   
 
 
     private final ArrayList<Song> songs;
+    // Queue to store recently added songs (FIFO)
+    private final Queue<Song> recentQueue = new LinkedList<>();
+
 
     // Load songs when controller starts
     public SongController() {
         songs = DataStore.loadSongs();
+        // Fill the recent queue from existing songs (last 5)
+    // This ensures dashboard shows recently added songs even after restart
+    loadRecentQueueFromSavedSongs();
     }
+    /**
+ * Loads the last 5 songs from the saved song list into recentQueue.
+ * This helps dashboard show "recent songs" even after restarting the program.
+ */
+private void loadRecentQueueFromSavedSongs() {
+
+    // Clear queue first (safe reset)
+    recentQueue.clear();
+
+    // If there are no songs, nothing to load
+    if (songs == null || songs.isEmpty()) {
+        return;
+    }
+
+    // Start index: last 5 songs (or 0 if less than 5)
+    int startIndex = Math.max(0, songs.size() - 5);
+
+    // Add the last songs in correct order (old → new)
+    for (int i = startIndex; i < songs.size(); i++) {
+        recentQueue.add(songs.get(i));
+    }
+}
+
 
     // Add new song
     public void addSong(Song song) {
-        songs.add(song);
-        DataStore.saveSongs(songs);
+    songs.add(song);
+
+    // Add song to recent queue
+    recentQueue.add(song);
+
+    // Keep only last 5 songs
+    if (recentQueue.size() > 5) {
+        recentQueue.poll(); // removes oldest song
     }
+
+    DataStore.saveSongs(songs);
+}
+    // Returns last 5 recently added songs
+    public Queue<Song> getRecentSongs() {
+    return recentQueue;
+}
+
+
+    //public void addSong(Song song) {
+        //songs.add(song);
+       // DataStore.saveSongs(songs);
+    //}
 
     // Update existing song
     public void updateSong(int index, Song song) {

@@ -10,7 +10,16 @@ import javax.swing.JOptionPane;
 import Controller.SongController;
 import Model.Song;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JLabel;
+import View.UserDashboard;
+import View.LoginPage;
+
+
+
 
 
 
@@ -21,6 +30,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AdminDashboard extends javax.swing.JFrame {
     
+
+    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboard.class.getName());
     
     // To track which row is being edited
@@ -28,6 +39,7 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     //Controller instance(handels Curd+Storage)
     private final SongController songController;
+  
     
     // Song list from model
     private ArrayList<Song> songs;
@@ -35,15 +47,25 @@ public class AdminDashboard extends javax.swing.JFrame {
     private final DefaultTableModel model;
     // Table model for Search & Sort table (jTable3)
     private DefaultTableModel searchTableModel;
+    //songs = songController.getAllSongs();
+    
+
     
     public AdminDashboard() {
     initComponents();
+    
 
     // Initialize controller
     songController = new SongController();
 
     // Load songs from model
     songs = songController.getAllSongs();
+   // loadDashboardStats();
+   // Load dashboard data
+    loadDashboardStats();
+    loadRecentSongs();
+    
+
 
     // Initialize table models
     model = (DefaultTableModel) jTable1.getModel();
@@ -52,6 +74,9 @@ public class AdminDashboard extends javax.swing.JFrame {
     // Clear dummy rows
     model.setRowCount(0);
     searchTableModel.setRowCount(0);
+    // Load dashboard data 
+   // loadRecentSongs();
+    //loadDashboardStats();
 
     // Card layout panels
     MainPanel.add(DashboardPanel, "dashboard");
@@ -73,7 +98,74 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     //  IMPORTANT: Load table
     loadSongsToTable();
+    
+
+    
 }
+    /**
+ * Loads dashboard statistics such as
+ * total songs and total artists.
+ */
+private void loadDashboardStats() {
+
+    // Get all songs from controller
+    ArrayList<Song> songs = songController.getAllSongs();
+
+    // -------------------------------
+    // TOTAL SONGS
+    // -------------------------------
+    int totalSongs = songs.size();
+    lblTotalSongs.setText("Total Songs: " + totalSongs);
+
+    // -------------------------------
+    // TOTAL ARTISTS (UNIQUE)
+    // -------------------------------
+    Set<String> uniqueArtists = new HashSet<>();
+
+    for (Song song : songs) {
+        // Avoid null values
+        if (song.getArtist() != null) {
+            uniqueArtists.add(song.getArtist().trim().toLowerCase());
+        }
+    }
+
+    int totalArtists = uniqueArtists.size();
+    lblTotalArtists.setText("Total Artists: " + totalArtists);
+}
+/**
+ * Loads recently added songs into dashboard labels.
+ * Uses Queue from SongController (FIFO order).
+ */
+private void loadRecentSongs() {
+
+    // Get recent songs from controller
+    Queue<Song> recentSongs = songController.getRecentSongs();
+
+    // Clear old text first
+    lblRecent1.setText("");
+    lblRecent2.setText("");
+    lblRecent3.setText("");
+    lblRecent4.setText("");
+
+    int index = 0;
+
+    // Display songs (max 4)
+    for (Song song : recentSongs) {
+
+        String text = "• " + song.getTitle() +
+                      " (" + song.getReleaseYear() + ")";
+
+        if (index == 0) lblRecent1.setText(text);
+        else if (index == 1) lblRecent2.setText(text);
+        else if (index == 2) lblRecent3.setText(text);
+        else if (index == 3) lblRecent4.setText(text);
+
+        index++;
+        if (index == 4) break;
+    }
+}
+
+
 
     
     /*
@@ -114,6 +206,10 @@ private void loadSearchTable(ArrayList<Song> list) {
 
 
 
+
+
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -141,6 +237,17 @@ private void loadSearchTable(ArrayList<Song> list) {
         jButton5 = new javax.swing.JButton();
         MainPanel = new javax.swing.JPanel();
         DashboardPanel = new javax.swing.JPanel();
+        headerPanel = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        statusPanel = new javax.swing.JPanel();
+        lblTotalSongs = new javax.swing.JLabel();
+        lblTotalArtists = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        lblRecent1 = new javax.swing.JLabel();
+        lblRecent2 = new javax.swing.JLabel();
+        lblRecent3 = new javax.swing.JLabel();
+        lblRecent4 = new javax.swing.JLabel();
         ViewSongPanel = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jButton8 = new javax.swing.JButton();
@@ -234,6 +341,11 @@ private void loadSearchTable(ArrayList<Song> list) {
         jButton7.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setText("LOGOUT");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -244,7 +356,7 @@ private void loadSearchTable(ArrayList<Song> list) {
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 363, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 369, Short.MAX_VALUE)
                 .addComponent(jButton7)
                 .addContainerGap())
         );
@@ -342,17 +454,112 @@ private void loadSearchTable(ArrayList<Song> list) {
         MainPanel.setLayout(new java.awt.CardLayout());
 
         DashboardPanel.setBackground(new java.awt.Color(255, 255, 255));
+        DashboardPanel.setLayout(new java.awt.BorderLayout());
 
-        javax.swing.GroupLayout DashboardPanelLayout = new javax.swing.GroupLayout(DashboardPanel);
-        DashboardPanel.setLayout(DashboardPanelLayout);
-        DashboardPanelLayout.setHorizontalGroup(
-            DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 601, Short.MAX_VALUE)
+        headerPanel.setBackground(java.awt.Color.darkGray);
+        headerPanel.setPreferredSize(new java.awt.Dimension(601, 100));
+
+        jLabel16.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel16.setText("Admin Dashboard");
+
+        jLabel17.setBackground(java.awt.Color.lightGray);
+        jLabel17.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel17.setText("Welcome, Admin");
+
+        javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
+        headerPanel.setLayout(headerPanelLayout);
+        headerPanelLayout.setHorizontalGroup(
+            headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(headerPanelLayout.createSequentialGroup()
+                .addGroup(headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(headerPanelLayout.createSequentialGroup()
+                        .addGap(203, 203, 203)
+                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(headerPanelLayout.createSequentialGroup()
+                        .addGap(220, 220, 220)
+                        .addComponent(jLabel17)))
+                .addContainerGap(224, Short.MAX_VALUE))
         );
-        DashboardPanelLayout.setVerticalGroup(
-            DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 527, Short.MAX_VALUE)
+        headerPanelLayout.setVerticalGroup(
+            headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(headerPanelLayout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jLabel16)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel17)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
+
+        DashboardPanel.add(headerPanel, java.awt.BorderLayout.PAGE_START);
+
+        lblTotalSongs.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        lblTotalSongs.setText("Total Songs: 0");
+
+        lblTotalArtists.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        lblTotalArtists.setText("Total Artists: 0");
+
+        jLabel19.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        jLabel19.setText("Recently added Songs ");
+
+        lblRecent1.setText("• Shape of You (2017)");
+
+        lblRecent2.setText("• Believer (2018)");
+        lblRecent2.setSize(new java.awt.Dimension(49, 20));
+
+        lblRecent3.setText("• Fix You (2005)");
+        lblRecent3.setSize(new java.awt.Dimension(49, 24));
+
+        lblRecent4.setText("• Perfect (2010)");
+        lblRecent4.setSize(new java.awt.Dimension(49, 28));
+
+        javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
+        statusPanel.setLayout(statusPanelLayout);
+        statusPanelLayout.setHorizontalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel19)
+                    .addGroup(statusPanelLayout.createSequentialGroup()
+                        .addGap(230, 230, 230)
+                        .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTotalArtists)
+                            .addComponent(lblTotalSongs))
+                        .addGap(48, 48, 48)))
+                .addContainerGap(220, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblRecent2)
+                    .addComponent(lblRecent1)
+                    .addComponent(lblRecent3)
+                    .addComponent(lblRecent4))
+                .addGap(246, 246, 246))
+        );
+        statusPanelLayout.setVerticalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addComponent(lblTotalSongs, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(lblTotalArtists)
+                .addGap(63, 63, 63)
+                .addComponent(jLabel19)
+                .addGap(29, 29, 29)
+                .addComponent(lblRecent1)
+                .addGap(28, 28, 28)
+                .addComponent(lblRecent2)
+                .addGap(35, 35, 35)
+                .addComponent(lblRecent3)
+                .addGap(44, 44, 44)
+                .addComponent(lblRecent4)
+                .addContainerGap(92, Short.MAX_VALUE))
+        );
+
+        DashboardPanel.add(statusPanel, java.awt.BorderLayout.CENTER);
 
         MainPanel.add(DashboardPanel, "dashboard");
 
@@ -397,7 +604,7 @@ private void loadSearchTable(ArrayList<Song> list) {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(85, 85, 85)
                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
                 .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(124, 124, 124))
         );
@@ -428,7 +635,7 @@ private void loadSearchTable(ArrayList<Song> list) {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(251, 251, 251)
                 .addComponent(jLabel3)
-                .addContainerGap(295, Short.MAX_VALUE))
+                .addContainerGap(301, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -580,7 +787,7 @@ private void loadSearchTable(ArrayList<Song> list) {
                                     .addComponent(txtReleaseYear)
                                     .addComponent(txtSongTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
                                     .addComponent(comboGenre, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                .addContainerGap(272, Short.MAX_VALUE))
+                .addContainerGap(278, Short.MAX_VALUE))
         );
         AddSongPanelLayout.setVerticalGroup(
             AddSongPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -611,7 +818,7 @@ private void loadSearchTable(ArrayList<Song> list) {
                 .addGroup(AddSongPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtReleaseYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 99, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 162, Short.MAX_VALUE)
                 .addGroup(AddSongPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton6)
                     .addComponent(btnClear))
@@ -638,7 +845,7 @@ private void loadSearchTable(ArrayList<Song> list) {
             .addGroup(TitlePanelLayout.createSequentialGroup()
                 .addGap(211, 211, 211)
                 .addComponent(jLabel13)
-                .addContainerGap(218, Short.MAX_VALUE))
+                .addContainerGap(224, Short.MAX_VALUE))
         );
         TitlePanelLayout.setVerticalGroup(
             TitlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -682,7 +889,7 @@ private void loadSearchTable(ArrayList<Song> list) {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
@@ -778,11 +985,11 @@ private void loadSearchTable(ArrayList<Song> list) {
         UserViewPanel.setLayout(UserViewPanelLayout);
         UserViewPanelLayout.setHorizontalGroup(
             UserViewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 601, Short.MAX_VALUE)
+            .addGap(0, 607, Short.MAX_VALUE)
         );
         UserViewPanelLayout.setVerticalGroup(
             UserViewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 527, Short.MAX_VALUE)
+            .addGap(0, 590, Short.MAX_VALUE)
         );
 
         MainPanel.add(UserViewPanel, "user");
@@ -820,6 +1027,13 @@ private void loadSearchTable(ArrayList<Song> list) {
         // TODO add your handling code here:
         CardLayout cl = (CardLayout) MainPanel.getLayout();
             cl.show(MainPanel, "user");
+            // Open User Dashboard
+UserDashboard userDashboard = new UserDashboard();
+userDashboard.setVisible(true);
+
+// Close Admin Dashboard
+this.dispose();
+            
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void comboGenreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboGenreActionPerformed
@@ -952,7 +1166,8 @@ JOptionPane.showMessageDialog(
         
        
 
-    
+   // loadRecentSongs();
+
     
     
 
@@ -1171,6 +1386,17 @@ if (confirm == JOptionPane.YES_OPTION) {
 
     }//GEN-LAST:event_jButton10ActionPerformed
 
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        // Go back to Login Page
+        LoginPage loginPage = new LoginPage();
+        loginPage.setVisible(true);
+
+        // Close Admin Dashboard
+        this.dispose();
+
+    }//GEN-LAST:event_jButton7ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1219,6 +1445,7 @@ if (confirm == JOptionPane.YES_OPTION) {
     private javax.swing.JPanel buttomPanel;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> comboGenre;
+    private javax.swing.JPanel headerPanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
@@ -1238,6 +1465,9 @@ if (confirm == JOptionPane.YES_OPTION) {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
@@ -1263,6 +1493,13 @@ if (confirm == JOptionPane.YES_OPTION) {
     private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable4;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lblRecent1;
+    private javax.swing.JLabel lblRecent2;
+    private javax.swing.JLabel lblRecent3;
+    private javax.swing.JLabel lblRecent4;
+    private javax.swing.JLabel lblTotalArtists;
+    private javax.swing.JLabel lblTotalSongs;
+    private javax.swing.JPanel statusPanel;
     private javax.swing.JPanel tableContainerPanel;
     private javax.swing.JTextField txtAlbum;
     private javax.swing.JTextField txtArtist;
@@ -1271,3 +1508,4 @@ if (confirm == JOptionPane.YES_OPTION) {
     private javax.swing.JTextField txtSongTitle;
     // End of variables declaration//GEN-END:variables
 }
+
