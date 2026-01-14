@@ -1,12 +1,15 @@
-package View;
-
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+package View;
 
-import java.awt.CardLayout;
+import Controller.SongController;
+import Model.Song;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author airm2
@@ -14,22 +17,67 @@ import java.awt.CardLayout;
 public class UserDashboard extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserDashboard.class.getName());
+    private SongController songController; 
 
     /**
      * Creates new form UserDashboard
      */
     public UserDashboard() {
         initComponents();
-        CardLayout cl = (CardLayout) mainPanel.getLayout();
-    mainPanel.add(homePanel, "home");
-    mainPanel.add(songsPanel, "songs");
-    mainPanel.add(favoritesPanel, "favorites");
-     mainPanel.add(searchSong, "SearchSongs");
+        // Initialize controller
+      songController = new SongController();
 
-    cl.show(mainPanel, "home"); // default
-
+      // Load all songs into table when dashboard opens
+      loadAllSongs();
         
     }
+    /**
+ * Loads all songs into the table when user dashboard opens
+ */
+private void loadAllSongs() {
+
+    // Get table model
+    DefaultTableModel model = (DefaultTableModel) tblSongs.getModel();
+
+    // Clear existing rows
+    model.setRowCount(0);
+
+    // Fetch all songs from controller
+    ArrayList<Song> songs = songController.getAllSongs();
+
+    // Add songs to table
+    for (Song song : songs) {
+        model.addRow(new Object[]{
+            song.getTitle(),
+            song.getArtist(),
+            song.getReleaseYear()
+        });
+    }
+}
+    
+ /**
+ * Loads a given list of songs into the JTable
+ */
+private void loadSongsToTable(ArrayList<Song> songs) {
+
+    DefaultTableModel model = (DefaultTableModel) tblSongs.getModel();
+
+    // Clear table
+    model.setRowCount(0);
+
+    // Add rows
+    for (Song song : songs) {
+        model.addRow(new Object[]{
+            song.getTitle(),
+            song.getArtist(),
+            song.getReleaseYear()
+        });
+    }
+}
+   
+    
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -40,276 +88,342 @@ public class UserDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        sidePanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
         mainPanel = new javax.swing.JPanel();
-        homePanel = new javax.swing.JPanel();
+        headerPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        songsPanel = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        SearchPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        favoritesPanel = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        searchSong = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        txtSearch = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
+        cmbSearchBy = new javax.swing.JComboBox<>();
+        btnRefresh = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
+        cmbSort = new javax.swing.JComboBox<>();
+        jButton3 = new javax.swing.JButton();
+        CenterPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblSongs = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Music Management System - User");
-        setBackground(new java.awt.Color(243, 240, 255));
-        setFocusable(false);
-        setResizable(false);
 
-        sidePanel.setBackground(new java.awt.Color(243, 240, 255));
-        sidePanel.setPreferredSize(new java.awt.Dimension(200, 0));
-        sidePanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
+        mainPanel.setLayout(new java.awt.BorderLayout());
 
-        jButton1.setBackground(new java.awt.Color(108, 99, 255));
-        jButton1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        headerPanel.setBackground(java.awt.Color.darkGray);
+
+        jLabel1.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText(" Music Management System – User");
+
+        jButton1.setBackground(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow"));
+        jButton1.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Home");
+        jButton1.setText("LOGOUT");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        sidePanel.add(jButton1);
 
-        jButton2.setBackground(new java.awt.Color(108, 99, 255));
-        jButton2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
+        headerPanel.setLayout(headerPanelLayout);
+        headerPanelLayout.setHorizontalGroup(
+            headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(headerPanelLayout.createSequentialGroup()
+                .addGap(64, 64, 64)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 297, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(31, 31, 31))
+        );
+        headerPanelLayout.setVerticalGroup(
+            headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerPanelLayout.createSequentialGroup()
+                .addContainerGap(34, Short.MAX_VALUE)
+                .addGroup(headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1)
+                    .addComponent(jLabel1))
+                .addGap(30, 30, 30))
+        );
+
+        mainPanel.add(headerPanel, java.awt.BorderLayout.PAGE_START);
+
+        SearchPanel.setBackground(java.awt.Color.darkGray);
+        SearchPanel.setPreferredSize(new java.awt.Dimension(804, 150));
+
+        jLabel2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Search Song:");
+
+        jButton2.setBackground(java.awt.Color.darkGray);
+        jButton2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Songs");
+        jButton2.setText("Search");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
-        sidePanel.add(jButton2);
 
-        jButton3.setBackground(new java.awt.Color(108, 99, 255));
-        jButton3.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        cmbSearchBy.setBackground(java.awt.Color.darkGray);
+        cmbSearchBy.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        cmbSearchBy.setForeground(new java.awt.Color(255, 255, 255));
+        cmbSearchBy.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Title", "Year", "Artist" }));
+
+        btnRefresh.setBackground(java.awt.Color.darkGray);
+        btnRefresh.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        btnRefresh.setForeground(new java.awt.Color(255, 255, 255));
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Sort by :");
+
+        cmbSort.setBackground(java.awt.Color.darkGray);
+        cmbSort.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        cmbSort.setForeground(new java.awt.Color(255, 255, 255));
+        cmbSort.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ascending(Year)", "Descending(Year)" }));
+
+        jButton3.setBackground(java.awt.Color.darkGray);
+        jButton3.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Favorites");
+        jButton3.setText("Sort");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
-        sidePanel.add(jButton3);
 
-        jButton5.setBackground(new java.awt.Color(108, 99, 255));
-        jButton5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jButton5.setForeground(new java.awt.Color(255, 255, 255));
-        jButton5.setText("Search Song");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+        javax.swing.GroupLayout SearchPanelLayout = new javax.swing.GroupLayout(SearchPanel);
+        SearchPanel.setLayout(SearchPanelLayout);
+        SearchPanelLayout.setHorizontalGroup(
+            SearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(SearchPanelLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(SearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(SearchPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(45, 45, 45)
+                        .addComponent(cmbSort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(jButton3))
+                    .addGroup(SearchPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(30, 30, 30)
+                        .addComponent(cmbSearchBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(44, 44, 44)
+                        .addComponent(jButton2)
+                        .addGap(48, 48, 48)
+                        .addComponent(btnRefresh)))
+                .addContainerGap(82, Short.MAX_VALUE))
+        );
+        SearchPanelLayout.setVerticalGroup(
+            SearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(SearchPanelLayout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addGroup(SearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(cmbSearchBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2)
+                    .addComponent(btnRefresh))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                .addGroup(SearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(cmbSort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3))
+                .addGap(15, 15, 15))
+        );
+
+        mainPanel.add(SearchPanel, java.awt.BorderLayout.PAGE_END);
+
+        CenterPanel.setBackground(java.awt.Color.gray);
+
+        tblSongs.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Title ", "Artist", "Year"
             }
-        });
-        sidePanel.add(jButton5);
+        ));
+        tblSongs.setRowHeight(28);
+        tblSongs.setSelectionBackground(new java.awt.Color(0, 0, 0));
+        tblSongs.setShowGrid(true);
+        jScrollPane1.setViewportView(tblSongs);
 
-        jButton4.setBackground(new java.awt.Color(108, 99, 255));
-        jButton4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("Logout");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-        sidePanel.add(jButton4);
+        jLabel3.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Available Songs");
 
-        mainPanel.setLayout(new java.awt.CardLayout());
-
-        homePanel.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel1.setBackground(new java.awt.Color(46, 46, 46));
-        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jLabel1.setText("Welcome User”");
-
-        javax.swing.GroupLayout homePanelLayout = new javax.swing.GroupLayout(homePanel);
-        homePanel.setLayout(homePanelLayout);
-        homePanelLayout.setHorizontalGroup(
-            homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(homePanelLayout.createSequentialGroup()
-                .addGap(151, 151, 151)
-                .addComponent(jLabel1)
+        javax.swing.GroupLayout CenterPanelLayout = new javax.swing.GroupLayout(CenterPanel);
+        CenterPanel.setLayout(CenterPanelLayout);
+        CenterPanelLayout.setHorizontalGroup(
+            CenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(CenterPanelLayout.createSequentialGroup()
+                .addGap(309, 309, 309)
+                .addComponent(jLabel3)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CenterPanelLayout.createSequentialGroup()
+                .addContainerGap(38, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 730, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36))
         );
-        homePanelLayout.setVerticalGroup(
-            homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(homePanelLayout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(jLabel1)
-                .addContainerGap(437, Short.MAX_VALUE))
-        );
-
-        mainPanel.add(homePanel, "card2");
-
-        songsPanel.setBackground(new java.awt.Color(255, 255, 255));
-        songsPanel.setForeground(new java.awt.Color(255, 255, 255));
-
-        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jLabel2.setText("“All Songs”");
-
-        javax.swing.GroupLayout songsPanelLayout = new javax.swing.GroupLayout(songsPanel);
-        songsPanel.setLayout(songsPanelLayout);
-        songsPanelLayout.setHorizontalGroup(
-            songsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(songsPanelLayout.createSequentialGroup()
-                .addGap(164, 164, 164)
-                .addComponent(jLabel2)
-                .addContainerGap(178, Short.MAX_VALUE))
-        );
-        songsPanelLayout.setVerticalGroup(
-            songsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(songsPanelLayout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addComponent(jLabel2)
-                .addContainerGap(431, Short.MAX_VALUE))
-        );
-
-        mainPanel.add(songsPanel, "card3");
-
-        favoritesPanel.setBackground(new java.awt.Color(255, 255, 255));
-        favoritesPanel.setForeground(new java.awt.Color(255, 255, 255));
-
-        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jLabel3.setText("Your Favorites");
-
-        javax.swing.GroupLayout favoritesPanelLayout = new javax.swing.GroupLayout(favoritesPanel);
-        favoritesPanel.setLayout(favoritesPanelLayout);
-        favoritesPanelLayout.setHorizontalGroup(
-            favoritesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(favoritesPanelLayout.createSequentialGroup()
-                .addGap(158, 158, 158)
+        CenterPanelLayout.setVerticalGroup(
+            CenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CenterPanelLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
                 .addComponent(jLabel3)
-                .addContainerGap(157, Short.MAX_VALUE))
-        );
-        favoritesPanelLayout.setVerticalGroup(
-            favoritesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(favoritesPanelLayout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addComponent(jLabel3)
-                .addContainerGap(416, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
-        mainPanel.add(favoritesPanel, "card4");
-
-        searchSong.setBackground(new java.awt.Color(255, 255, 255));
-        searchSong.setForeground(new java.awt.Color(255, 255, 255));
-
-        jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel5.setText("Search Song");
-
-        javax.swing.GroupLayout searchSongLayout = new javax.swing.GroupLayout(searchSong);
-        searchSong.setLayout(searchSongLayout);
-        searchSongLayout.setHorizontalGroup(
-            searchSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(searchSongLayout.createSequentialGroup()
-                .addGap(170, 170, 170)
-                .addComponent(jLabel5)
-                .addContainerGap(183, Short.MAX_VALUE))
-        );
-        searchSongLayout.setVerticalGroup(
-            searchSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(searchSongLayout.createSequentialGroup()
-                .addGap(57, 57, 57)
-                .addComponent(jLabel5)
-                .addContainerGap(426, Short.MAX_VALUE))
-        );
-
-        mainPanel.add(searchSong, "card5");
-
-        jPanel1.setBackground(java.awt.Color.lightGray);
-
-        jLabel4.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jLabel4.setText("Music Management System-User");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(97, 97, 97))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(35, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(27, 27, 27))
-        );
+        mainPanel.add(CenterPanel, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(sidePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(sidePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(19, 19, 19))
+                .addContainerGap()
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        CardLayout cl = (CardLayout) mainPanel.getLayout();
-        cl.show(mainPanel, "home");
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        CardLayout cl = (CardLayout) mainPanel.getLayout();
-        cl.show(mainPanel, "songs");
         
+
+    String keyword = txtSearch.getText().trim();
+
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a search keyword");
+        return;
+    }
+
+    // Get table model
+    DefaultTableModel model = (DefaultTableModel) tblSongs.getModel();
+    model.setRowCount(0);
+
+    ArrayList<Song> results;
+
+    // Decide which search to use
+    if (cmbSearchBy.getSelectedItem().equals("Title (Exact)")) {
+
+        // Binary search by title
+        Song song = songController.searchByTitleBinary(keyword);
+
+        if (song != null) {
+            model.addRow(new Object[]{
+                song.getTitle(),
+                song.getArtist(),
+                song.getReleaseYear()
+            });
+        }
+
+    } else if (cmbSearchBy.getSelectedItem().equals("Year (Exact)")) {
+
+        // Binary search by year
+        Song song = songController.searchByYearBinary(Integer.parseInt(keyword));
+
+        if (song != null) {
+            model.addRow(new Object[]{
+                song.getTitle(),
+                song.getArtist(),
+                song.getReleaseYear()
+            });
+        }
+
+    } else {
+        // ? LINEAR SEARCH (PARTIAL MATCH)
+        results = songController.linearSearch(keyword);
+
+        for (Song song : results) {
+            model.addRow(new Object[]{
+                song.getTitle(),
+                song.getArtist(),
+                song.getReleaseYear()
+            });
+        }
+    
+}
+
+        
+
+    
+
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+        
+txtSearch.setText("");
+
+    // Reload full sorted list (default ascending)
+    ArrayList<Song> songs = songController.sortSongsAscending();
+    loadSongsToTable(songs);
+    
+
+
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        CardLayout cl = (CardLayout) mainPanel.getLayout();
-        cl.show(mainPanel, "favorites");
         
+
+    
+
+
+    String option = cmbSort.getSelectedItem().toString();
+
+    ArrayList<Song> sortedSongs;
+
+    if (option.equals("Ascending(Year)")) {
+        sortedSongs = songController.sortSongsAscending();
+    } else {
+        sortedSongs = songController.sortSongsDescending();
+    }
+
+    // Load sorted list into table
+    loadSongsToTable(sortedSongs);
+
+
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        new LoginPage().setVisible(true);
-        this.dispose();
-        
-        
-    }//GEN-LAST:event_jButton4ActionPerformed
+        // Close UserDashboard
+    this.dispose();
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-        CardLayout cl = (CardLayout) mainPanel.getLayout();
-        cl.show(mainPanel, "SearchSongs");
-        
-    }//GEN-LAST:event_jButton5ActionPerformed
+    // Open Login Page
+    LoginPage login = new LoginPage();
+    login.setLocationRelativeTo(null); // center screen
+    login.setVisible(true);
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -337,22 +451,22 @@ public class UserDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel favoritesPanel;
-    private javax.swing.JPanel homePanel;
+    private javax.swing.JPanel CenterPanel;
+    private javax.swing.JPanel SearchPanel;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JComboBox<String> cmbSearchBy;
+    private javax.swing.JComboBox<String> cmbSort;
+    private javax.swing.JPanel headerPanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JPanel searchSong;
-    private javax.swing.JPanel sidePanel;
-    private javax.swing.JPanel songsPanel;
+    private javax.swing.JTable tblSongs;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }
