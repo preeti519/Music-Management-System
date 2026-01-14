@@ -1,6 +1,7 @@
 package View;
 
 
+import Controller.UserController;
 import View.LoginPage;
 import javax.swing.JOptionPane;
 
@@ -187,7 +188,41 @@ public class RegisterFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         
+
+    String username = jTextField1.getText().trim();
+    String password = jTextField2.getText().trim();
+    String confirm  = jTextField3.getText().trim();
+    String role = "User"; // default role (or from radio button if you have)
+
+    // 1️⃣ Empty field validation
+    if (username.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill all fields");
+        return;
+    }
+
+    // 2️⃣ Password match check
+    if (!password.equals(confirm)) {
+        JOptionPane.showMessageDialog(this, "Passwords do not match");
+        return;
+    }
+
+    // 3️⃣ Register user via controller
+    boolean success = UserController.registerUser(username, password, role);
+
+    if (success) {
+        JOptionPane.showMessageDialog(this, "Registered successfully");
+
+        // Go back to login page
+        new LoginPage().setVisible(true);
+        this.dispose();
+
+    } else {
+        JOptionPane.showMessageDialog(this, "Username already exists");
+    
+}
+
         
+   /**    
 
     String username = jTextField1.getText().trim();
     String password = jTextField2.getText().trim();
@@ -207,8 +242,7 @@ public class RegisterFrame extends javax.swing.JFrame {
 
     new LoginPage().setVisible(true);
     this.dispose();
-
-
+*/
         
     }//GEN-LAST:event_jButton1ActionPerformed
 

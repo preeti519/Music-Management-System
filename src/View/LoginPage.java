@@ -1,5 +1,6 @@
 package View;
 
+import Controller.UserController;
 import javax.swing.JOptionPane;
 
 /**
@@ -253,38 +254,116 @@ public class LoginPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+       
+
     String username = txtUsername.getText().trim();
+    
     String password = txtPassword.getText().trim();
 
+    //String role = rdoAdmin.isSelected() ? "Admin" : "User";
+    String role = rbAdmin.isSelected() ? "Admin" : "User";
+
+    //Empty field Validation
     if (username.isEmpty() || password.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please fill all fields");
+        JOptionPane.showMessageDialog(
+            this,
+            "Username and Password cannot be empty",
+            "Validation Error",
+            JOptionPane.WARNING_MESSAGE
+        );
         return;
     }
 
-    // ADMIN LOGIN
-    if (rbAdmin.isSelected()) {
-        if (username.equals("admin") && password.equals("admin")) {
+    boolean loginSuccess;
+
+    // Role-based Login
+    if (role.equals("Admin")) {
+        loginSuccess = UserController.loginAdmin(username, password);
+    } else {
+        loginSuccess = UserController.loginUser(username, password);
+    }
+
+    // Result handeling
+    if (loginSuccess) {
+
+        JOptionPane.showMessageDialog(this, "Login successful");
+
+        if (role.equals("Admin")) {
             new AdminDashboard().setVisible(true);
-            this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Invalid Admin credentials");
-        }
-    }
-
-    // USER LOGIN
-    else if (rbUser.isSelected()) {
-        if (username.equals("user") && password.equals("user")) {
             new UserDashboard().setVisible(true);
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid User credentials");
         }
+
+        this.dispose();
+
+    } else {
+        JOptionPane.showMessageDialog(
+            this,
+            "Invalid " + role + " credentials",
+            "Login Failed",
+            JOptionPane.ERROR_MESSAGE
+        );
     }
 
-    else {
-        JOptionPane.showMessageDialog(this, "Please select a role");
+ 
+    /*
+    String username = txtUsername.getText().trim();
+    String password = new String(txtPassword.getPassword());
+    String role = rdoAdmin.isSelected() ? "Admin" : "User";
+
+    // Basic validation
+    if (username.isEmpty() || password.isEmpty()) {
+        JOptionPane.showMessageDialog(
+            this,
+            "Username and Password cannot be empty",
+            "Validation Error",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
     }
+
+    // ================= ADMIN LOGIN =================
+    if (role.equals("Admin")) {
+
+        if (username.equals("admin") && password.equals("admin")) {
+
+            AdminDashboard admin = new AdminDashboard();
+            admin.setLocationRelativeTo(null);
+            admin.setVisible(true);
+            this.dispose();
+
+        } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Invalid Admin credentials",
+                "Login Failed",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+        return;
+    }
+
+    // ================= USER LOGIN =================
+    boolean isValidUser = UserController.loginUser(username, password);
+
+    if (isValidUser) {
+
+        UserDashboard userDashboard = new UserDashboard();
+        userDashboard.setLocationRelativeTo(null);
+        userDashboard.setVisible(true);
+        this.dispose();
+
+    } else {
+        JOptionPane.showMessageDialog(
+            this,
+            "Invalid username or password.\nPlease register first.",
+            "Login Failed",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+*/
 
 
     
