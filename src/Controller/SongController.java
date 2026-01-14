@@ -2,6 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
 package Controller;
 
 import Model.DataStore;
@@ -13,6 +14,7 @@ import java.util.Queue;
  * Controller connects View and Model.
  * View never directly accesses file or data.
  */
+/*
 public class SongController {
    
    
@@ -34,6 +36,28 @@ public class SongController {
  * Loads the last 5 songs from the saved song list into recentQueue.
  * This helps dashboard show "recent songs" even after restarting the program.
  */
+/*
+    
+    // SongController.java
+private Queue<Song> recentSongs = new LinkedList<>();
+private static final int MAX_RECENT = 5;
+
+public void addSong(Song song) {
+    songs.add(song);
+    DataStore.saveSongs(songs);
+
+    // Maintain recent queue
+    if (recentSongs.size() == MAX_RECENT) {
+        recentSongs.poll(); // remove oldest
+    }
+    recentSongs.add(song);
+}
+
+public Queue<Song> getRecentSongs() {
+    return new LinkedList<>(recentSongs);
+}
+
+    /**
 private void loadRecentQueueFromSavedSongs() {
 
     // Clear queue first (safe reset)
@@ -52,7 +76,9 @@ private void loadRecentQueueFromSavedSongs() {
         recentQueue.add(songs.get(i));
     }
 }
-
+*/
+/*
+    
 
     // Add new song
     public void addSong(Song song) {
@@ -134,6 +160,7 @@ private void sortByTitle() {
  * This search is for exact year matches only.
  * Time Complexity: O(log n)
  */
+/*
 public Song searchByYearBinary(int year) {
 
     // Step 1: Sort songs by year before searching
@@ -172,6 +199,7 @@ public Song searchByYearBinary(int year) {
  * Helper method to sort songs by release year (ascending).
  * Binary Search by year requires sorted data.
  */
+/*
 private void sortByYearAscending() {
     songs.sort((a, b) ->
         Integer.compare(a.getReleaseYear(), b.getReleaseYear()));
@@ -190,6 +218,7 @@ private void sortByYearAscending() {
  * Linear Search is used because Binary Search
  * cannot support partial matching.
  */
+/*
 public ArrayList<Song> linearSearch(String keyword) {
 
     ArrayList<Song> results = new ArrayList<>();
@@ -219,6 +248,7 @@ public ArrayList<Song> linearSearch(String keyword) {
  * Sort songs by release year in ascending order.
  * This method is called from the View (Sort button).
  */
+/*
 public ArrayList<Song> sortSongsAscending() {
 
     songs.sort((a, b) ->
@@ -231,6 +261,7 @@ public ArrayList<Song> sortSongsAscending() {
  * Sort songs by release year in descending order.
  * Newest songs appear first.
  */
+/*
 public ArrayList<Song> sortSongsDescending() {
 
     songs.sort((a, b) ->
@@ -246,3 +277,145 @@ public ArrayList<Song> sortSongsDescending() {
     
     
 }
+*/
+package Controller;
+
+import Model.DataStore;
+import Model.Song;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class SongController {
+
+    private final ArrayList<Song> songs;
+    private final Queue<Song> recentQueue;
+    private static final int MAX_RECENT = 5;
+
+    // Constructor
+    public SongController() {
+        songs = DataStore.loadSongs();
+        recentQueue = new LinkedList<>();
+        loadRecentQueueFromSavedSongs();
+    }
+
+    // Load last 5 songs into queue (after restart support)
+    private void loadRecentQueueFromSavedSongs() {
+        recentQueue.clear();
+
+        if (songs.isEmpty()) return;
+
+        int start = Math.max(0, songs.size() - MAX_RECENT);
+
+        for (int i = start; i < songs.size(); i++) {
+            recentQueue.add(songs.get(i));
+        }
+    }
+
+    // Add new song
+    public void addSong(Song song) {
+        songs.add(song);
+
+        // Maintain recent queue
+        if (recentQueue.size() == MAX_RECENT) {
+            recentQueue.poll(); // remove oldest
+        }
+        recentQueue.add(song);
+
+        DataStore.saveSongs(songs);
+    }
+
+    // Get recent songs (safe copy)
+    public Queue<Song> getRecentSongs() {
+        return new LinkedList<>(recentQueue);
+    }
+
+    // Update song
+    public void updateSong(int index, Song song) {
+        songs.set(index, song);
+        DataStore.saveSongs(songs);
+    }
+
+    // Delete song
+    public void deleteSong(int index) {
+        songs.remove(index);
+        DataStore.saveSongs(songs);
+    }
+
+    // Get all songs
+    public ArrayList<Song> getAllSongs() {
+        return songs;
+    }
+
+    // ================= SEARCH =================
+
+    // Binary Search by title (exact)
+    public Song searchByTitleBinary(String title) {
+        sortByTitle();
+        int low = 0, high = songs.size() - 1;
+
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            int cmp = songs.get(mid).getTitle().compareToIgnoreCase(title);
+
+            if (cmp == 0) return songs.get(mid);
+            else if (cmp < 0) low = mid + 1;
+            else high = mid - 1;
+        }
+        return null;
+    }
+
+    private void sortByTitle() {
+        songs.sort((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()));
+    }
+
+    // Binary Search by year
+    public Song searchByYearBinary(int year) {
+        sortByYearAscending();
+        int low = 0, high = songs.size() - 1;
+
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            int midYear = songs.get(mid).getReleaseYear();
+
+            if (midYear == year) return songs.get(mid);
+            else if (midYear < year) low = mid + 1;
+            else high = mid - 1;
+        }
+        return null;
+    }
+
+    private void sortByYearAscending() {
+        songs.sort((a, b) -> Integer.compare(a.getReleaseYear(), b.getReleaseYear()));
+    }
+
+    // Linear Search (partial)
+    public ArrayList<Song> linearSearch(String keyword) {
+        ArrayList<Song> results = new ArrayList<>();
+        String key = keyword.toLowerCase();
+
+        for (Song song : songs) {
+            if (song.getTitle().toLowerCase().contains(key)
+                || song.getArtist().toLowerCase().contains(key)
+                || String.valueOf(song.getReleaseYear()).contains(key)) {
+
+                results.add(song);
+            }
+        }
+        return results;
+    }
+
+    // ================= SORT =================
+
+    public ArrayList<Song> sortSongsAscending() {
+        sortByYearAscending();
+        return songs;
+    }
+
+    public ArrayList<Song> sortSongsDescending() {
+        songs.sort((a, b) -> Integer.compare(b.getReleaseYear(), a.getReleaseYear()));
+        return songs;
+    }
+}
+
+

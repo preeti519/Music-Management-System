@@ -27,18 +27,32 @@ import View.LoginPage;
 /**
  *
  * @author airm2
+ * 
  */
+
+
 public class AdminDashboard extends javax.swing.JFrame {
     
 
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboard.class.getName());
+
+    private static AdminDashboard instance;
+
+public static AdminDashboard getInstance() {
+    if (instance == null) {
+        instance = new AdminDashboard();
+    }
+    return instance;
+}
+
     
     // To track which row is being edited
     private int editingRowIndex = -1;
 
     //Controller instance(handels Curd+Storage)
     private final SongController songController;
+    
   
     
     // Song list from model
@@ -53,10 +67,13 @@ public class AdminDashboard extends javax.swing.JFrame {
     
     public AdminDashboard() {
     initComponents();
+    instance = this; 
     
 
     // Initialize controller
     songController = new SongController();
+    //loadStats();
+    loadRecentSongs();
 
     // Load songs from model
     songs = songController.getAllSongs();
@@ -136,7 +153,7 @@ private void loadDashboardStats() {
  * Loads recently added songs into dashboard labels.
  * Uses Queue from SongController (FIFO order).
  */
-private void loadRecentSongs() {
+public void loadRecentSongs() {
 
     // Get recent songs from controller
     Queue<Song> recentSongs = songController.getRecentSongs();
@@ -521,42 +538,42 @@ private void loadSearchTable(ArrayList<Song> list) {
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(statusPanelLayout.createSequentialGroup()
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel19)
+                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(statusPanelLayout.createSequentialGroup()
-                        .addGap(230, 230, 230)
+                        .addGap(218, 218, 218)
+                        .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblRecent1)
+                            .addComponent(lblRecent2)
+                            .addComponent(lblRecent3)
+                            .addComponent(lblRecent4)))
+                    .addGroup(statusPanelLayout.createSequentialGroup()
+                        .addGap(208, 208, 208)
+                        .addComponent(jLabel19))
+                    .addGroup(statusPanelLayout.createSequentialGroup()
+                        .addGap(224, 224, 224)
                         .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblTotalArtists)
-                            .addComponent(lblTotalSongs))
-                        .addGap(48, 48, 48)))
-                .addContainerGap(220, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblRecent2)
-                    .addComponent(lblRecent1)
-                    .addComponent(lblRecent3)
-                    .addComponent(lblRecent4))
-                .addGap(246, 246, 246))
+                            .addComponent(lblTotalSongs))))
+                .addContainerGap(237, Short.MAX_VALUE))
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(statusPanelLayout.createSequentialGroup()
-                .addGap(28, 28, 28)
+                .addGap(38, 38, 38)
                 .addComponent(lblTotalSongs, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addComponent(lblTotalArtists)
-                .addGap(63, 63, 63)
-                .addComponent(jLabel19)
-                .addGap(29, 29, 29)
-                .addComponent(lblRecent1)
                 .addGap(28, 28, 28)
+                .addComponent(lblTotalArtists)
+                .addGap(48, 48, 48)
+                .addComponent(jLabel19)
+                .addGap(32, 32, 32)
+                .addComponent(lblRecent1)
+                .addGap(33, 33, 33)
                 .addComponent(lblRecent2)
-                .addGap(35, 35, 35)
-                .addComponent(lblRecent3)
                 .addGap(44, 44, 44)
+                .addComponent(lblRecent3)
+                .addGap(39, 39, 39)
                 .addComponent(lblRecent4)
-                .addContainerGap(92, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         DashboardPanel.add(statusPanel, java.awt.BorderLayout.CENTER);
@@ -1134,6 +1151,9 @@ this.dispose();
 // ADD MODE
 if (editingRowIndex == -1) {
     songController.addSong(song);
+    // refresh admin dashboard immediately
+AdminDashboard admin = AdminDashboard.getInstance();
+admin.loadRecentSongs();
 }
 // UPDATE MODE
 else {
