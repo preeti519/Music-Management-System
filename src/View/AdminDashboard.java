@@ -694,7 +694,6 @@ private void loadSearchTable(ArrayList<Song> list) {
         jTable1.setSelectionBackground(new java.awt.Color(120, 120, 120));
         jTable1.setSelectionForeground(new java.awt.Color(255, 255, 255));
         jTable1.setShowGrid(true);
-        jTable1.setShowVerticalLines(true);
         jScrollPane1.setViewportView(jTable1);
 
         tableContainerPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -896,8 +895,6 @@ private void loadSearchTable(ArrayList<Song> list) {
         jTable3.setToolTipText("");
         jTable3.setRowHeight(25);
         jTable3.setShowGrid(true);
-        jTable3.setShowHorizontalLines(true);
-        jTable3.setShowVerticalLines(true);
         jScrollPane3.setViewportView(jTable3);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);

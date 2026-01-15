@@ -58,13 +58,14 @@ public class LoginPage extends javax.swing.JFrame {
             .addGap(0, 325, Short.MAX_VALUE)
         );
 
-        jPanel7.setBackground(new java.awt.Color(243, 240, 255));
+        jPanel7.setBackground(java.awt.Color.darkGray);
 
         jLabel7.setBackground(new java.awt.Color(46, 46, 46));
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 24)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Welcome Back ");
 
-        jButton2.setBackground(new java.awt.Color(108, 99, 255));
+        jButton2.setBackground(new java.awt.Color(102, 102, 102));
         jButton2.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("SIGN UP");
@@ -76,6 +77,7 @@ public class LoginPage extends javax.swing.JFrame {
 
         jLabel1.setBackground(new java.awt.Color(46, 46, 46));
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("New here? Create an account to get started.");
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
@@ -109,7 +111,7 @@ public class LoginPage extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -126,7 +128,7 @@ public class LoginPage extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(108, 99, 255));
+        jButton1.setBackground(new java.awt.Color(102, 102, 102));
         jButton1.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("SIGN IN");
